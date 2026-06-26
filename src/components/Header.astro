@@ -8,21 +8,21 @@ const isActive = (href: string) => {
   return path.startsWith(href);
 };
 
-const monthNl = new Date().toLocaleDateString("nl-NL", { month: "long" });
-const year = new Date().getFullYear();
 ---
 
 <header data-header class="relative bg-[color:var(--bg)]">
-  {/* Almanak-banner bovenaan met huidige maand */}
-  <div class="border-b border-accent-300 bg-warm-50 dark:bg-ink-900">
-    <div class="container-page py-2.5 flex items-center justify-between text-[10.5px] uppercase tracking-[0.22em] font-semibold text-accent-700 dark:text-accent-300">
+  {/* Archief-strip — monospace, formal */}
+  <div class="border-b border-[color:var(--color-brand-200)] bg-[color:var(--color-paper-100)]">
+    <div class="container-page py-2.5 flex items-center justify-between font-mono text-[10.5px] uppercase tracking-[0.18em] font-semibold text-[color:var(--color-brand-700)]">
       <span class="flex items-center gap-2">
-        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path d="M10 2 C7 5 4 7 4 11 C4 14 6 16 10 17 C14 16 16 14 16 11 C16 7 13 5 10 2 Z M10 5 L10 17"/>
+        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <rect x="3" y="3" width="14" height="14"/>
+          <line x1="3" y1="8" x2="17" y2="8"/>
+          <line x1="3" y1="13" x2="17" y2="13"/>
         </svg>
-        Almanak {monthNl} {year}
+        Open archief · 120 voorbeelden
       </span>
-      <span class="hidden md:inline">Wat staat er op in de tuin?</span>
+      <span class="hidden md:inline text-[color:var(--color-accent-700)]">Klaar om aan te passen, niet om te kopiëren</span>
     </div>
   </div>
 
