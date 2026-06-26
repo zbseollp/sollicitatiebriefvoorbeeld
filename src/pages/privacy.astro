@@ -1,0 +1,37 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/Container.astro";
+import { SITE } from "@lib/site";
+const title = `Privacy | ${SITE.name}`;
+const description = `Hoe ${SITE.name} omgaat met persoonsgegevens.`;
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="bg-[color:var(--bg)] border-b border-[color:var(--border)]">
+    <Container>
+      <div class="py-14 md:py-20 max-w-3xl">
+        <p class="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-[color:var(--color-brand-700)] mb-4">Juridisch</p>
+        <h1 class="font-display !leading-[1.04] tracking-tight">Privacyverklaring.</h1>
+      </div>
+    </Container>
+  </section>
+
+  <Container as="section" class="py-12 md:py-16">
+    <article class="prose-wonenhuis mx-auto">
+      <p>
+        {SITE.name} verwerkt zo min mogelijk persoonsgegevens. Geen accounts, geen profielen, geen verkoop van data.
+      </p>
+      <h2>Welke gegevens</h2>
+      <p>Alleen wat je zelf invult via het contactformulier (naam, e-mailadres, bericht). Gebruikt om je vraag te beantwoorden, daarna niet langer bewaard dan nodig — hooguit zes maanden.</p>
+      <h2>Cookies</h2>
+      <p>Geen tracking-cookies, geen advertenties. Als je via de cookiebanner toestemming geeft, schakelen we Google Analytics 4 met IP-anonimisering in. Intrekken via "Cookies" in de footer.</p>
+      <h2>Web3Forms + hCaptcha</h2>
+      <p>Het contactformulier loopt via <a href="https://web3forms.com/legal/privacy-policy" rel="noopener">Web3Forms</a>, beveiligd met <a href="https://www.hcaptcha.com/privacy" rel="noopener">hCaptcha</a>.</p>
+      <h2>Hosting</h2>
+      <p>De site draait op <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">Cloudflare Pages</a>.</p>
+      <h2>Je rechten</h2>
+      <p>Inzage, correctie of verwijdering: stuur een bericht via <a href="/contact/">contact</a>. Reactie binnen 30 dagen.</p>
+      <p class="text-sm text-[color:var(--text-muted)] italic">Laatst bijgewerkt: juni 2026.</p>
+    </article>
+  </Container>
+</BaseLayout>
