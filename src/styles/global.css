@@ -1,0 +1,212 @@
+@import "tailwindcss";
+@import "@fontsource-variable/plus-jakarta-sans/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@font-face { font-family: "Jakarta Fallback"; src: local("Arial"); size-adjust: 102%; ascent-override: 95%; descent-override: 22%; line-gap-override: 0%; }
+@font-face { font-family: "Mono Fallback"; src: local("Menlo"); size-adjust: 100%; }
+
+@theme {
+  /* Brand — diep navy: corporate maar niet saai */
+  --color-brand-50:  #f0f5fb;
+  --color-brand-100: #d8e6f3;
+  --color-brand-200: #afc9e6;
+  --color-brand-300: #82a8d3;
+  --color-brand-400: #5587bd;
+  --color-brand-500: #3a6da7;
+  --color-brand-600: #2b558a;
+  --color-brand-700: #1f4070;
+  --color-brand-800: #16305a;
+  --color-brand-900: #0f2c4d;
+  --color-brand-950: #061734;
+
+  /* Accent — potlood-geel: markeerstift / pencil tone */
+  --color-accent-50:  #fdf8e8;
+  --color-accent-100: #faedba;
+  --color-accent-200: #f4dc7b;
+  --color-accent-300: #efc94a;
+  --color-accent-400: #e8b842;
+  --color-accent-500: #d5a02d;
+  --color-accent-600: #ad7e23;
+  --color-accent-700: #855f20;
+  --color-accent-800: #644721;
+  --color-accent-900: #4a361e;
+  --color-accent-950: #2b1f10;
+
+  /* Vellum — papier-toon */
+  --color-paper-50:  #fbfaf6;
+  --color-paper-100: #f4f1e8;
+  --color-paper-200: #e6e0d0;
+  --color-paper-300: #c4baa3;
+
+  /* Steel/ink */
+  --color-ink-50:  #f7f8f9;
+  --color-ink-100: #eceef2;
+  --color-ink-200: #d4d8de;
+  --color-ink-300: #a8b0bb;
+  --color-ink-400: #6f7a8a;
+  --color-ink-500: #4a5564;
+  --color-ink-600: #313a47;
+  --color-ink-700: #1f262f;
+  --color-ink-800: #11161c;
+  --color-ink-900: #080b10;
+  --color-ink-950: #040608;
+
+  --font-sans: "Plus Jakarta Sans Variable", "Jakarta Fallback", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Plus Jakarta Sans Variable", "Jakarta Fallback", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "Mono Fallback", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --text-h1: clamp(2.25rem, 1.55rem + 3.4vw, 4.25rem);
+  --text-h2: clamp(1.75rem, 1.25rem + 2.4vw, 2.75rem);
+  --text-h3: clamp(1.4rem, 1.15rem + 1.2vw, 1.875rem);
+  --text-body: clamp(1rem, 0.96rem + 0.18vw, 1.0625rem);
+
+  --spacing-section: clamp(2.5rem, 4.5vw, 5rem);
+  --container-prose: 70ch;
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --bg: var(--color-paper-50);
+    --surface: #ffffff;
+    --surface-muted: var(--color-paper-100);
+    --text: var(--color-ink-900);
+    --text-muted: var(--color-ink-500);
+    --border: var(--color-ink-200);
+    --border-strong: var(--color-ink-300);
+    --primary: var(--color-brand-700);
+    --primary-hover: var(--color-brand-800);
+    --accent: var(--color-accent-400);
+  }
+  :root.dark { color-scheme: dark; --bg: var(--color-ink-950); --surface: var(--color-ink-900); --surface-muted: var(--color-ink-900); --text: var(--color-ink-100); --text-muted: var(--color-ink-400); --border: var(--color-ink-700); --border-strong: var(--color-ink-600); --primary: var(--color-brand-300); --primary-hover: var(--color-brand-200); --accent: var(--color-accent-300); }
+  html { font-family: var(--font-sans); color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { font-size: var(--text-body); line-height: 1.65; }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.022em; color: var(--text); line-height: 1.12; }
+  h1 { font-size: var(--text-h1); }
+  h2 { font-size: var(--text-h2); }
+  h3 { font-size: var(--text-h3); }
+  ::selection { background-color: var(--color-accent-200); color: var(--color-ink-900); }
+  *:focus-visible { outline: 2px solid var(--color-accent-400); outline-offset: 3px; border-radius: 4px; }
+  a { color: inherit; text-decoration: none; }
+  img, svg, video { display: block; max-width: 100%; height: auto; }
+}
+
+@layer components {
+  .container-page { width: 100%; max-width: 76rem; margin-left: auto; margin-right: auto; padding-left: 1.25rem; padding-right: 1.25rem; }
+  @media (min-width: 768px) { .container-page { padding-left: 2rem; padding-right: 2rem; } }
+  .section-pad { padding-top: var(--spacing-section); padding-bottom: var(--spacing-section); }
+
+  .prose-wonenhuis { max-width: var(--container-prose); font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.1875rem); line-height: 1.72; color: var(--text); }
+  .prose-wonenhuis :where(h1, h2, h3, h4) { font-family: var(--font-display); color: var(--text); line-height: 1.18; margin-top: 2em; margin-bottom: 0.5em; letter-spacing: -0.02em; }
+  .prose-wonenhuis :where(h1) { font-size: clamp(2rem, 1.6rem + 1.6vw, 2.75rem); }
+  .prose-wonenhuis :where(h2) { font-size: clamp(1.5rem, 1.3rem + 0.9vw, 2rem); }
+  .prose-wonenhuis :where(h3) { font-size: 1.375rem; }
+  .prose-wonenhuis :where(p) { margin-bottom: 1.1em; }
+  .prose-wonenhuis :where(p, li) strong { color: var(--text); font-weight: 700; }
+  .prose-wonenhuis :where(a) { color: var(--primary); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; text-decoration-color: var(--color-accent-400); transition: color 160ms var(--ease-out-quart); }
+  .prose-wonenhuis :where(a:hover) { color: var(--primary-hover); text-decoration-color: var(--color-brand-700); }
+  .prose-wonenhuis :where(ul, ol) { padding-left: 1.5em; margin-bottom: 1.1em; }
+  .prose-wonenhuis :where(ul) { list-style-type: disc; }
+  .prose-wonenhuis :where(ol) { list-style-type: decimal; }
+  .prose-wonenhuis :where(li) { margin-bottom: 0.4em; }
+  .prose-wonenhuis :where(img) { border-radius: 4px; margin: 1.6em auto; box-shadow: 0 1px 0 var(--border); }
+  .prose-wonenhuis :where(blockquote) { border-left: 4px solid var(--color-accent-400); padding: 0.4em 1.2em; margin: 1.5em 0; font-weight: 500; color: var(--text-muted); background: var(--color-paper-100); }
+  .prose-wonenhuis :where(code) { background: var(--color-paper-100); padding: 0.15em 0.35em; border-radius: 3px; font-size: 0.92em; font-family: var(--font-mono); }
+  .prose-wonenhuis :where(hr) { border: 0; border-top: 1px solid var(--border); margin: 2.5em 0; }
+}
+
+/* ----- Sollicitatie-eigen utilities ----- */
+@layer components {
+  .index-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.25rem;
+    position: relative;
+    transition: border-color 180ms var(--ease-out-quart), box-shadow 180ms var(--ease-out-quart);
+  }
+  .index-card:hover {
+    border-color: var(--color-brand-600);
+    box-shadow: 0 4px 18px -8px rgba(15, 44, 77, 0.18);
+  }
+
+  .index-num {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--color-ink-400);
+    letter-spacing: 0.04em;
+  }
+
+  .marker {
+    background: linear-gradient(180deg, transparent 55%, var(--color-accent-200) 55%);
+    padding: 0 0.15em;
+  }
+
+  .tab-rij {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 2px solid var(--color-ink-200);
+  }
+  .tab-rij > a {
+    padding: 0.7rem 1.1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-ink-500);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 160ms var(--ease-out-quart), border-color 160ms var(--ease-out-quart);
+  }
+  .tab-rij > a:hover {
+    color: var(--color-brand-700);
+  }
+  .tab-rij > a.active {
+    color: var(--color-brand-900);
+    border-bottom-color: var(--color-accent-400);
+  }
+
+  .doc-frame {
+    background: var(--surface);
+    border: 1px solid var(--color-paper-300);
+    border-radius: 2px;
+    padding: 1.5rem 1.4rem;
+    position: relative;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--color-ink-700);
+    line-height: 1.6;
+  }
+  .doc-frame::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 1.1rem;
+    width: 1px;
+    background: var(--color-accent-300);
+    opacity: 0.5;
+  }
+
+  .beroep-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-brand-700);
+    background: var(--color-brand-50);
+    padding: 0.2rem 0.55rem;
+    border-radius: 100px;
+  }
+
+  .meta-row {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-ink-400);
+    letter-spacing: 0.04em;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }

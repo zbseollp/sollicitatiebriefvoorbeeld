@@ -1,0 +1,211 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/Container.astro";
+import { SITE } from "@lib/site";
+import { getAllPosts, postUrl } from "@lib/posts";
+
+const allPosts = await getAllPosts();
+
+const byCat: Record<string, typeof allPosts> = {};
+for (const c of SITE.categories) byCat[c.name] = [];
+for (const p of allPosts) {
+  const cat = p.data.categories?.[0];
+  if (cat && byCat[cat]) byCat[cat].push(p);
+}
+
+const beroepen = byCat["Brief per beroep"] || [];
+const beroepenAZ = [...beroepen].sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+const writingTips = (byCat["Sollicitatiebrief"] || []).slice(0, 4);
+const interviewTips = (byCat["Sollicitatiegesprek"] || []).slice(0, 3);
+const cvTips = (byCat["CV-voorbeelden"] || []).slice(0, 6);
+
+const recentPosts = allPosts.slice(0, 6).map(p => ({ slug: p.id, title: p.data.title }));
+
+const STAPPEN = [
+  { nr: "01", title: "Kies een voorbeeld", body: "Bij jouw beroep, of een dichtbij gelegen functie. De toon en structuur zijn vaak overdraagbaar." },
+  { nr: "02", title: "Pas aan naar jouw situatie", body: "Vervang algemene zinnen door specifieke prestaties. Een werkgever wil zien wat jij hebt gedaan, niet wat het beroep behelst." },
+  { nr: "03", title: "Schrijf je CV passend bij de brief", body: "De brief vertelt het verhaal, het CV bewijst het. De volgorde van werkervaring en skills mag verschillen per vacature." },
+  { nr: "04", title: "Bereid het gesprek voor", body: "Verdiep je in het bedrijf, oefen kernzinnen uit je brief, bereid drie vragen voor die je zelf wilt stellen." },
+];
+---
+
+<BaseLayout
+  title={`${SITE.name} — ${SITE.tagline}`}
+  description={SITE.description}
+  recentPosts={recentPosts}
+>
+  <Fragment slot="jsonld">
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": SITE.name,
+      "url": SITE.url,
+      "inLanguage": "nl-NL",
+      "description": SITE.description,
+    })} />
+  </Fragment>
+
+  <section class="bg-[color:var(--bg)] border-b border-[color:var(--border)]">
+    <Container>
+      <div class="py-16 md:py-24 grid lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-7">
+          <p class="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[color:var(--color-brand-700)] mb-4">{beroepen.length}+ voorbeelden · {allPosts.length} pagina's</p>
+          <h1 class="font-display !text-[clamp(2.4rem,1.7rem+3.4vw,4.5rem)] !leading-[1.04] tracking-tight text-balance">
+            Een sollicitatiebrief die de werkgever <span class="marker">echt leest.</span>
+          </h1>
+          <p class="mt-6 text-lg text-[color:var(--text-muted)] max-w-2xl leading-relaxed">
+            Per beroep een uitgewerkt voorbeeld. Met de opbouw die werkt, de zinnen die je niet moet typen, en het CV-format dat erbij past.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="#voorbeelden" class="inline-flex h-11 items-center px-5 bg-[color:var(--color-brand-900)] hover:bg-[color:var(--color-brand-700)] text-white text-sm font-semibold transition-colors rounded">
+              Voorbeelden per beroep
+            </a>
+            <a href="/blog/" class="inline-flex h-11 items-center px-5 border border-[color:var(--color-brand-900)] text-[color:var(--color-brand-900)] hover:bg-[color:var(--color-brand-50)] text-sm font-semibold transition-colors rounded">
+              Alle artikelen
+            </a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5">
+          <div class="doc-frame transform rotate-[-1deg] shadow-[0_24px_60px_-30px_rgba(15,44,77,0.4)]">
+            <p class="text-right text-[0.7rem] text-[color:var(--color-ink-400)]">Amsterdam, 26 juni</p>
+            <p class="mt-3">Beste mevrouw De Vries,</p>
+            <p class="mt-3">Met veel interesse heb ik uw vacature voor coördinator bouw gelezen. De combinatie van planning, communicatie met onderaannemers en directe vertaling naar tekening sluit nauw aan bij wat ik op mijn huidige positie doe.</p>
+            <p class="mt-3">In de afgelopen drie jaar heb ik vijf projecten van 0,5 tot 2 miljoen euro begeleid, telkens binnen budget en tijd. De grootste leerschool was —</p>
+            <p class="mt-3">Graag licht ik mijn motivatie persoonlijk toe.</p>
+            <p class="mt-5">Met vriendelijke groet,</p>
+            <p class="mt-4" style="font-style: italic; color: var(--color-accent-700);">M. de Boer</p>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  <section class="py-16 md:py-20">
+    <Container>
+      <div class="max-w-5xl mx-auto">
+        <h2 class="font-display !text-2xl md:!text-3xl mb-3">Van vacature naar gesprek in vier stappen.</h2>
+        <p class="text-base text-[color:var(--text-muted)] mb-10 max-w-2xl">De volgorde die hier wordt aangehouden — eerst de brief, dan het CV en dan de gespreksvoorbereiding.</p>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {STAPPEN.map(s => (
+            <div class="index-card">
+              <p class="index-num">{s.nr}</p>
+              <h3 class="font-display !text-lg mt-2 mb-2">{s.title}</h3>
+              <p class="text-sm text-[color:var(--text-muted)] leading-relaxed">{s.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  <section id="voorbeelden" class="py-16 md:py-20 bg-[color:var(--color-paper-100)] border-y border-[color:var(--border)]">
+    <Container>
+      <div class="max-w-6xl mx-auto">
+        <div class="flex items-baseline justify-between flex-wrap gap-3 mb-3">
+          <h2 class="font-display !text-2xl md:!text-3xl">Voorbeelden per beroep</h2>
+          <span class="meta-row">{beroepen.length} voorbeelden · alfabetisch</span>
+        </div>
+        <p class="text-sm text-[color:var(--text-muted)] mb-8 max-w-2xl">Klik op een functie om het volledige voorbeeld te zien. Aanwijzingen voor aanpassing staan onder elk voorbeeld.</p>
+
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+          {beroepenAZ.slice(0, 32).map(p => (
+            <a href={postUrl(p)} class="group border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 hover:border-[color:var(--color-brand-700)] hover:shadow-sm transition-all">
+              <p class="font-display font-semibold text-sm leading-tight group-hover:text-[color:var(--color-brand-700)] transition-colors line-clamp-2">
+                {p.data.title}
+              </p>
+            </a>
+          ))}
+        </div>
+
+        {beroepen.length > 32 && (
+          <div class="mt-8 text-center">
+            <a href="/blog/category/brief-per-beroep/" class="inline-flex items-center gap-2 text-sm font-semibold text-[color:var(--color-brand-700)] border-b-2 border-[color:var(--color-accent-400)] pb-0.5">
+              Bekijk alle {beroepen.length} voorbeelden <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        )}
+      </div>
+    </Container>
+  </section>
+
+  {writingTips.length > 0 && (
+    <section class="py-16 md:py-20">
+      <Container>
+        <div class="max-w-5xl mx-auto">
+          <h2 class="font-display !text-2xl md:!text-3xl mb-3">De brief opbouwen.</h2>
+          <p class="text-base text-[color:var(--text-muted)] mb-10 max-w-2xl">Welke alinea hoort waar, hoe open en sluit je af, en wat te doen bij een open sollicitatie.</p>
+
+          <div class="grid md:grid-cols-2 gap-x-10 gap-y-8">
+            {writingTips.map((p, i) => (
+              <a href={postUrl(p)} class="group flex gap-5 items-start">
+                <span class="index-num pt-1 shrink-0">/{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3 class="font-display !text-base !mt-0 mb-1.5 group-hover:text-[color:var(--color-brand-700)] transition-colors">{p.data.title}</h3>
+                  <p class="text-sm text-[color:var(--text-muted)] leading-relaxed line-clamp-3">{p.data.metaDescription || p.data.excerpt}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </Container>
+    </section>
+  )}
+
+  {cvTips.length > 0 && (
+    <section class="py-16 md:py-20 bg-[color:var(--color-paper-100)] border-y border-[color:var(--border)]">
+      <Container>
+        <div class="max-w-5xl mx-auto">
+          <h2 class="font-display !text-2xl md:!text-3xl mb-3">CV-voorbeelden &amp; tips.</h2>
+          <p class="text-base text-[color:var(--text-muted)] mb-10 max-w-2xl">Templates en uitwerkingen, plus wat een werkgever in 6 seconden eerst ziet.</p>
+
+          <div class="grid md:grid-cols-3 gap-5">
+            {cvTips.map(p => (
+              <a href={postUrl(p)} class="index-card block">
+                <p class="beroep-tag mb-2">CV</p>
+                <h3 class="font-display !text-base !mt-0 leading-snug line-clamp-2 hover:text-[color:var(--color-brand-700)] transition-colors">{p.data.title}</h3>
+              </a>
+            ))}
+          </div>
+        </div>
+      </Container>
+    </section>
+  )}
+
+  {interviewTips.length > 0 && (
+    <section class="py-16 md:py-20">
+      <Container>
+        <div class="max-w-5xl mx-auto grid md:grid-cols-12 gap-10">
+          <div class="md:col-span-4">
+            <h2 class="font-display !text-2xl md:!text-3xl mb-3">Het gesprek.</h2>
+            <p class="text-base text-[color:var(--text-muted)] leading-relaxed">Wat te verwachten, welke vragen je krijgt en wat je zelf moet voorbereiden. Inclusief de moeilijke vragen waar je nog geen antwoord op hebt.</p>
+          </div>
+          <div class="md:col-span-8 space-y-5">
+            {interviewTips.map(p => (
+              <a href={postUrl(p)} class="block group border-b border-[color:var(--border)] pb-5 last:border-b-0">
+                <h3 class="font-display !text-lg !mt-0 group-hover:text-[color:var(--color-brand-700)] transition-colors">{p.data.title}</h3>
+                <p class="mt-1.5 text-sm text-[color:var(--text-muted)] line-clamp-2 leading-relaxed">{p.data.metaDescription || p.data.excerpt}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      </Container>
+    </section>
+  )}
+
+  <section class="bg-[color:var(--color-brand-900)] text-[color:var(--color-paper-50)] py-16 md:py-20">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="font-display !text-2xl md:!text-3xl text-white">Een specifieke vraag?</h2>
+        <p class="mt-4 text-base text-[color:var(--color-brand-200)] max-w-xl mx-auto leading-relaxed">
+          Een lastige sector waarvoor geen voorbeeld bestaat, of een vraag over de toon van jouw brief? Stuur het via het formulier en we kijken mee.
+        </p>
+        <a href="/contact/" class="mt-6 inline-flex h-11 items-center px-6 bg-[color:var(--color-accent-400)] hover:bg-[color:var(--color-accent-500)] text-[color:var(--color-brand-900)] text-sm font-bold transition-colors rounded">
+          Open het contactformulier
+        </a>
+      </div>
+    </Container>
+  </section>
+</BaseLayout>

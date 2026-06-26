@@ -1,0 +1,133 @@
+---
+import { SITE } from "@lib/site";
+import Logo from "./Logo.astro";
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => {
+  if (href === "/") return path === "/";
+  return path.startsWith(href);
+};
+
+const monthNl = new Date().toLocaleDateString("nl-NL", { month: "long" });
+const year = new Date().getFullYear();
+---
+
+<header data-header class="relative bg-[color:var(--bg)]">
+  {/* Almanak-banner bovenaan met huidige maand */}
+  <div class="border-b border-accent-300 bg-warm-50 dark:bg-ink-900">
+    <div class="container-page py-2.5 flex items-center justify-between text-[10.5px] uppercase tracking-[0.22em] font-semibold text-accent-700 dark:text-accent-300">
+      <span class="flex items-center gap-2">
+        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M10 2 C7 5 4 7 4 11 C4 14 6 16 10 17 C14 16 16 14 16 11 C16 7 13 5 10 2 Z M10 5 L10 17"/>
+        </svg>
+        Almanak {monthNl} {year}
+      </span>
+      <span class="hidden md:inline">Wat staat er op in de tuin?</span>
+    </div>
+  </div>
+
+  {/* Logo gecentreerd met handgetekende krul-onderlijn */}
+  <div class="container-page py-10 md:py-14 text-center">
+    <div class="inline-block">
+      <Logo iconClass="h-11 w-11 md:h-13 md:w-13" textClass="text-3xl md:text-4xl lg:text-5xl" />
+    </div>
+    {/* Botanical curl divider */}
+    <svg class="mx-auto mt-5 h-6 w-32 text-accent-600" viewBox="0 0 160 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+      <path d="M2 12 Q40 4 80 12 T158 12"/>
+      <circle cx="80" cy="12" r="2" fill="currentColor"/>
+      <path d="M70 12 L74 8 M70 12 L74 16" />
+      <path d="M90 12 L86 8 M90 12 L86 16" />
+    </svg>
+    <p class="mt-2 font-display italic text-base md:text-lg text-ink-600 dark:text-ink-300 max-w-xl mx-auto">
+      {SITE.tagline}
+    </p>
+  </div>
+
+  {/* NAV: serif-gestyleerd met blad-ornament */}
+  <nav class="border-t border-b border-accent-400 bg-cream-50 dark:bg-ink-900/40" aria-label="Hoofdmenu">
+    <div class="container-page py-4 hidden md:flex items-center justify-center gap-6 flex-wrap">
+      {SITE.navigation.map((item, i) => (
+        <Fragment>
+          {i > 0 && (
+            <svg class="h-3 w-3 text-accent-500" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+              <path d="M6 1 Q3 4 3 7 Q3 10 6 11 Q9 10 9 7 Q9 4 6 1 Z"/>
+            </svg>
+          )}
+          <a
+            href={item.href}
+            class:list={[
+              "font-display text-[15px] font-semibold tracking-tight transition-colors",
+              isActive(item.href)
+                ? "text-accent-700 dark:text-accent-300 italic"
+                : "text-ink-800 dark:text-ink-200 hover:text-accent-700 dark:hover:text-accent-300",
+            ]}
+          >
+            {item.label}
+          </a>
+        </Fragment>
+      ))}
+    </div>
+
+    <div class="md:hidden container-page py-3 flex justify-center">
+      <button
+        type="button"
+        data-mobile-menu-toggle
+        aria-label="Open menu"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] font-semibold text-accent-700 dark:text-accent-300"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+        Menu
+      </button>
+    </div>
+  </nav>
+
+  <div
+    id="mobile-menu"
+    data-mobile-menu
+    hidden
+    class="md:hidden border-b border-accent-300 bg-cream-50 dark:bg-ink-900"
+  >
+    <nav class="container-page py-4 flex flex-col gap-1 text-center" aria-label="Mobiel menu">
+      {SITE.navigation.map((item) => (
+        <a
+          href={item.href}
+          class:list={[
+            "py-3 font-display text-base font-semibold",
+            isActive(item.href)
+              ? "text-accent-700 dark:text-accent-300 italic"
+              : "text-ink-800 dark:text-ink-200 hover:text-accent-700 dark:hover:text-accent-300",
+          ]}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<script>
+  function setupHeader() {
+    const toggle = document.querySelector<HTMLButtonElement>("[data-mobile-menu-toggle]");
+    const menu = document.querySelector<HTMLElement>("[data-mobile-menu]");
+    if (toggle && menu) {
+      toggle.addEventListener("click", () => {
+        const open = menu.hasAttribute("hidden");
+        if (open) {
+          menu.removeAttribute("hidden");
+          toggle.setAttribute("aria-expanded", "true");
+        } else {
+          menu.setAttribute("hidden", "");
+          toggle.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
+  }
+  setupHeader();
+  document.addEventListener("astro:after-swap", setupHeader);
+</script>

@@ -1,0 +1,46 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/Container.astro";
+import { SITE } from "@lib/site";
+const title = `Over | ${SITE.name}`;
+const description = `Over Sollicitatiebriefvoorbeeld.nl — voorbeeldbrieven en CV-tips voor het sollicitatietraject.`;
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="bg-[color:var(--bg)] border-b border-[color:var(--border)]">
+    <Container>
+      <div class="py-16 md:py-24 max-w-3xl">
+        <p class="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[color:var(--color-brand-700)] mb-4">Over de site</p>
+        <h1>Voorbeelden die werken, niet die vol staan met clichés.</h1>
+      </div>
+    </Container>
+  </section>
+
+  <Container as="section" class="py-12 md:py-16">
+    <article class="prose-wonenhuis mx-auto">
+      <p>
+        Sollicitatiebriefvoorbeeld.nl begon eenvoudig: te veel kandidaten stuurden brieven die op iedereen pasten, dus op niemand. Een werkgever leest 50 brieven in een uur, herkent de standaard-formuleringen ("hierbij solliciteer ik op de positie van") en zucht.
+      </p>
+
+      <h2>Wat hier wél staat</h2>
+      <p>
+        Per beroep een voorbeeld dat eruit ziet alsof iemand het écht zou schrijven — niet alsof het uit een template-bibliotheek komt. Concreet, met cijfers, met een afgemeten enthousiasme. En per voorbeeld een korte uitleg wat je moet veranderen voordat je het zelf gebruikt.
+      </p>
+
+      <h2>Wat hier niet staat</h2>
+      <p>
+        Geen "schrijf je sollicitatiebrief in 5 minuten"-bullshit. Geen lijstjes van 50 generieke power-words. Geen AI-gegenereerde walls of text die als drie alinea's hadden gemoeten.
+      </p>
+
+      <h2>Voor wie</h2>
+      <p>
+        Voor wie net begint met solliciteren (eerste baan, stage). Voor de zij-instromer die uit een sector komt waar nooit een sollicitatiebrief geschreven werd. Voor de ervaren werknemer die merkt dat "20 jaar ervaring" alleen niet meer genoeg is.
+      </p>
+
+      <h2>Een voorbeeld voor jouw beroep niet hierbij?</h2>
+      <p>
+        Laat het weten via <a href="/contact/">contact</a> — we voegen periodiek nieuwe beroepen toe aan de collectie. De aanvraag helpt vaak ook andere lezers met dezelfde functie.
+      </p>
+    </article>
+  </Container>
+</BaseLayout>

@@ -1,0 +1,57 @@
+---
+import { SITE } from "@lib/site";
+import CurrentYear from "./CurrentYear.astro";
+import Logo from "./Logo.astro";
+
+interface Props {
+  recentPosts?: Array<{ slug: string; title: string }>;
+}
+const { recentPosts = [] } = Astro.props;
+---
+
+<footer class="mt-20 bg-[color:var(--color-brand-900)] text-[color:var(--color-paper-100)]">
+  <div class="container-page py-14 md:py-16">
+    <div class="grid md:grid-cols-12 gap-10">
+      <div class="md:col-span-5">
+        <div class="text-white">
+          <Logo iconClass="h-10 w-10" textClass="text-lg" />
+        </div>
+        <p class="mt-4 text-sm text-[color:var(--color-brand-200)] max-w-md leading-relaxed">
+          Voorbeeldbrieven per beroep, CV-templates en praktische tips. Klaar om in je eigen woorden over te nemen.
+        </p>
+      </div>
+
+      <div class="md:col-span-3">
+        <p class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[color:var(--color-accent-300)] mb-3">Site</p>
+        <ul class="space-y-1.5 text-sm">
+          {SITE.navigation.map(n => (
+            <li><a href={n.href} class="hover:text-[color:var(--color-accent-300)] transition-colors">{n.label}</a></li>
+          ))}
+          <li><a href="/sitemap/" class="hover:text-[color:var(--color-accent-300)] transition-colors">Sitemap</a></li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-2">
+        <p class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[color:var(--color-accent-300)] mb-3">Rubrieken</p>
+        <ul class="space-y-1.5 text-sm">
+          {SITE.categories.map(c => (
+            <li><a href={`/blog/category/${c.slug}/`} class="hover:text-[color:var(--color-accent-300)] transition-colors">{c.name}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="md:col-span-2">
+        <p class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[color:var(--color-accent-300)] mb-3">Juridisch</p>
+        <ul class="space-y-1.5 text-sm">
+          <li><a href="/privacy/" class="hover:text-[color:var(--color-accent-300)] transition-colors">Privacy</a></li>
+          <li><button type="button" data-open-consent class="text-left hover:text-[color:var(--color-accent-300)] transition-colors">Cookies</button></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-10 pt-6 border-t border-[color:var(--color-brand-700)] flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs text-[color:var(--color-brand-200)] font-mono">
+      <p>© <CurrentYear />&nbsp;{SITE.name}</p>
+      <p class="uppercase tracking-wider text-[0.65rem]">Voorbeeldbrieven · CV · Sollicitatietraject</p>
+    </div>
+  </div>
+</footer>

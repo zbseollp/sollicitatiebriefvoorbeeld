@@ -1,0 +1,166 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/Container.astro";
+import { SITE } from "@lib/site";
+import { getAllPosts, postUrl, getRecentPosts, isHomepageSafe } from "@lib/posts";
+
+const allPosts = await getAllPosts();
+const totalPosts = allPosts.length;
+
+// Posts per category, sorted by recency. Categories ordered by post count (most first).
+const postsByCategory = SITE.categories
+  .map((cat) => ({
+    ...cat,
+    posts: allPosts.filter((p) => p.data.categories.includes(cat.name)),
+  }))
+  .filter((c) => c.posts.length > 0)
+  .sort((a, b) => b.posts.length - a.posts.length);
+
+const recentPosts = (await getRecentPosts(6)).map((p) => ({ slug: p.id, title: p.data.title }));
+
+// Small icon mapping per category (inline SVG paths). Keeps it visual without external assets.
+const categoryIcons: Record<string, string> = {
+  "huishelden": "M12 3l3 6 6 .9-4.5 4.4L18 21l-6-3.2L6 21l1.5-6.7L3 9.9 9 9l3-6z",
+  "kruid-natuur": "M12 2a7 7 0 0 1 7 7c0 5-4 11-7 13C9 20 5 14 5 9a7 7 0 0 1 7-7zm0 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",
+  "licht-lucht": "M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
+  "magisch-wonen": "M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5L12 2zM19 15l.7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15z",
+  "ongewenste-bezoekers": "M12 2a4 4 0 0 1 4 4v2h2a3 3 0 0 1 3 3v2h-3v4h2a2 2 0 0 1 0 4h-3l-2-3h-2v-3h-2v3h-2l-2 3H6a2 2 0 0 1 0-4h2v-4H5v-2a3 3 0 0 1 3-3h2V6a4 4 0 0 1 2-4z",
+  "opruimen-onderhouden": "M3 7h18l-1.5 12.5A2 2 0 0 1 17.5 21h-11A2 2 0 0 1 4.5 19.5L3 7zm5-3h8v3M9 11v6M12 11v6M15 11v6",
+  "overige": "M4 6h16M4 12h16M4 18h16",
+};
+
+const staticPages = [
+  { href: "/", label: "Home", description: "Het hart van de site", icon: "M3 12L12 3l9 9M5 10v10h14V10" },
+  { href: "/blog/", label: "Artikelen", description: "Alle blogs op één plek", icon: "M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4V4zM8 8h8M8 12h8M8 16h5" },
+  { href: "/over-ons/", label: "Over ons", description: "Wie zit er achter de site", icon: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" },
+  { href: "/contact/", label: "Contact", description: "Stuur ons een bericht", icon: "M3 7l9 6 9-6M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7M3 7l2-2h14l2 2" },
+];
+---
+
+<BaseLayout
+  title="Sitemap"
+  description="Overzicht van alle pagina's en artikelen."
+  recentPosts={recentPosts}
+>
+  <Container as="section" class="section-pad">
+    <div class="max-w-3xl">
+      <p class="text-xs font-medium uppercase tracking-wider text-brand-700 dark:text-brand-400">
+        Sitemap
+      </p>
+      <h1 class="mt-3">Alles op een rij</h1>
+      <p class="mt-4 text-lg text-[color:var(--text-muted)]">
+        Een overzicht van alle pagina's en {totalPosts} artikelen op
+        De site, netjes per onderwerp gegroepeerd.
+      </p>
+    </div>
+
+    {/* Static pages - 4-up card grid */}
+    <section class="mt-14">
+      <div class="flex items-baseline justify-between gap-4 mb-6">
+        <h2 class="text-2xl md:text-3xl">Pagina's</h2>
+        <span class="text-sm text-[color:var(--text-muted)]">
+          {staticPages.length}
+        </span>
+      </div>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {staticPages.map((p) => (
+          <a
+            href={p.href}
+            class="group flex items-start gap-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700"
+          >
+            <span class="flex-shrink-0 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-400">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d={p.icon} />
+              </svg>
+            </span>
+            <span class="min-w-0">
+              <span class="block font-display font-semibold text-[color:var(--text)] group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">
+                {p.label}
+              </span>
+              <span class="mt-0.5 block text-xs text-[color:var(--text-muted)]">
+                {p.description}
+              </span>
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {/* Categories with their posts inside */}
+    <section class="mt-16">
+      <div class="flex items-baseline justify-between gap-4 mb-8">
+        <h2 class="text-2xl md:text-3xl">Op onderwerp</h2>
+        <span class="text-sm text-[color:var(--text-muted)]">
+          {postsByCategory.length} categorieën
+        </span>
+      </div>
+
+      <div class="space-y-6">
+        {postsByCategory.map((cat) => {
+          const sortedPosts = [...cat.posts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+          const isLarge = cat.posts.length > 10;
+          return (
+            <article class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] overflow-hidden">
+              <header class="flex items-center justify-between gap-4 px-6 py-5 md:px-8 md:py-6 border-b border-[color:var(--border)] bg-gradient-to-br from-warm-50 to-transparent dark:from-ink-900/60 dark:to-transparent">
+                <div class="flex items-center gap-4 min-w-0">
+                  <span class="flex-shrink-0 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-400">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d={categoryIcons[cat.slug] || categoryIcons["overige"]} />
+                    </svg>
+                  </span>
+                  <div class="min-w-0">
+                    <h3 class="font-display text-xl md:text-2xl font-semibold truncate">
+                      <a href={`/blog/`} class="hover:text-brand-700 dark:hover:text-brand-400 transition-colors">
+                        {cat.name}
+                      </a>
+                    </h3>
+                    <p class="mt-0.5 text-sm text-[color:var(--text-muted)]">
+                      {cat.posts.length} {cat.posts.length === 1 ? "artikel" : "artikelen"}
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={`/blog/`}
+                  class="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-brand-700 dark:text-brand-400 hover:underline whitespace-nowrap"
+                >
+                  Bekijk alle <span aria-hidden="true">→</span>
+                </a>
+              </header>
+
+              <ul class:list={[
+                "px-6 md:px-8 py-5 md:py-6 grid gap-x-6 gap-y-2.5",
+                isLarge ? "md:grid-cols-2 lg:grid-cols-3" : cat.posts.length > 4 ? "md:grid-cols-2" : "grid-cols-1",
+              ]}>
+                {sortedPosts.map((post) => (
+                  <li class="flex items-start gap-2">
+                    <span class="flex-shrink-0 mt-2 h-1 w-1 rounded-full bg-brand-400/60" aria-hidden="true"></span>
+                    <a
+                      href={postUrl(post)}
+                      class="text-sm text-[color:var(--text)] hover:text-brand-700 dark:hover:text-brand-400 hover:underline underline-offset-4 transition-colors leading-snug"
+                    >
+                      {post.data.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    {/* Closing helper */}
+    <section class="mt-16 rounded-3xl border border-[color:var(--border)] bg-gradient-to-br from-brand-50 via-warm-50 to-brand-50/40 dark:from-brand-950/40 dark:via-ink-900 dark:to-brand-900/20 p-8 md:p-10 text-center">
+      <p class="text-xs font-medium uppercase tracking-wider text-brand-700 dark:text-brand-400">
+        Mis je iets?
+      </p>
+      <h2 class="mt-2 text-2xl md:text-3xl">Stuur ons een bericht</h2>
+      <p class="mt-3 text-[color:var(--text-muted)] max-w-xl mx-auto">
+        Kun je niet vinden wat je zoekt of heb je een onderwerp dat wij eens onder de loep mogen nemen? Laat het ons weten.
+      </p>
+      <a href="/contact/" class="mt-6 inline-flex h-11 items-center rounded-full bg-brand-700 hover:bg-brand-800 dark:bg-brand-500 dark:hover:bg-brand-400 px-6 text-sm font-medium text-white dark:text-ink-950 transition-all">
+        Naar contact →
+      </a>
+    </section>
+  </Container>
+</BaseLayout>

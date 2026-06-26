@@ -1,0 +1,55 @@
+---
+import Card from "./Card.astro";
+
+interface Props {
+  href: string;
+  title: string;
+  excerpt?: string;
+  date: Date | string;
+  image?: string;
+  imageAlt?: string;
+  category?: string;
+  priority?: boolean;
+}
+const { href, title, excerpt, date, image, imageAlt, category, priority = false } = Astro.props;
+const dateStr =
+  typeof date === "string"
+    ? new Date(date).toLocaleDateString("nl-NL", { year: "numeric", month: "short", day: "numeric" })
+    : date.toLocaleDateString("nl-NL", { year: "numeric", month: "short", day: "numeric" });
+---
+
+<Card href={href} class="flex flex-col h-full">
+  {image && (
+    <div class="aspect-[16/10] overflow-hidden bg-ink-100 dark:bg-ink-800 border-b border-[color:var(--border)]">
+      <img
+        src={image}
+        alt={imageAlt ?? ""}
+        width="640"
+        height="400"
+        loading={priority ? "eager" : "lazy"}
+        fetchpriority={priority ? "high" : "auto"}
+        decoding={priority ? "sync" : "async"}
+        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+      />
+    </div>
+  )}
+  <div class="flex-1 flex flex-col p-5 md:p-6 gap-2.5">
+    {category && (
+      <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-700 dark:text-brand-400">
+        <span class="h-1 w-1 bg-accent-500 rounded-full"></span>
+        {category}
+      </span>
+    )}
+    <h2 class="text-lg md:text-xl font-bold leading-snug tracking-tight text-[color:var(--text)] group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">
+      {title}
+    </h2>
+    {excerpt && (
+      <p class="text-sm text-[color:var(--text-muted)] line-clamp-2 flex-1">
+        {excerpt}
+      </p>
+    )}
+    <time datetime={typeof date === "string" ? date : date.toISOString()} class="text-xs text-[color:var(--text-muted)] mt-auto pt-1 tabular-nums">
+      {dateStr}
+    </time>
+  </div>
+</Card>

@@ -1,0 +1,130 @@
+---
+import type { CollectionEntry, MarkdownHeading } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+import Container from "@components/Container.astro";
+import TableOfContents from "@components/TableOfContents.astro";
+import RelatedPosts from "@components/RelatedPosts.astro";
+import { SITE } from "@lib/site";
+import { formatDateNL } from "@lib/posts";
+
+interface Props {
+  post: CollectionEntry<"blog">;
+  headings?: MarkdownHeading[];
+  related?: CollectionEntry<"blog">[];
+  readingMinutes?: number;
+}
+
+const { post, headings = [], related = [], readingMinutes } = Astro.props;
+const { data } = post;
+
+const ogImage = data.featuredImage || "/og-default.png";
+const publishedTime = data.date.toISOString();
+
+const categorySlug = SITE.categories.find((c) => data.categories.includes(c.name))?.slug ?? null;
+const categoryName = SITE.categories.find((c) => c.slug === categorySlug)?.name ?? data.categories[0] ?? null;
+---
+
+<BaseLayout
+  title={data.metaTitle || data.title}
+  description={data.metaDescription}
+  ogImage={ogImage}
+  ogType="article"
+  publishedTime={publishedTime}
+>
+  <Fragment slot="jsonld">
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": data.title,
+      "description": data.metaDescription,
+      "datePublished": publishedTime,
+      "image": ogImage.startsWith("http") ? ogImage : `${SITE.url}${ogImage}`,
+      "author": { "@type": "Organization", "name": SITE.author },
+      "publisher": {
+        "@type": "Organization",
+        "name": SITE.name,
+        "logo": {
+          "@type": "ImageObject",
+          "url": `${SITE.url}/favicon.svg`,
+        },
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `${SITE.url}${Astro.url.pathname}`,
+      },
+    })} />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE.url + "/" },
+        { "@type": "ListItem", "position": 2, "name": "Artikelen", "item": SITE.url + "/blog/" },
+        ...(categoryName && categorySlug
+          ? [{ "@type": "ListItem", "position": 3, "name": categoryName, "item": `${SITE.url}/blog/` }]
+          : []),
+        { "@type": "ListItem", "position": categoryName ? 4 : 3, "name": data.title, "item": `${SITE.url}${Astro.url.pathname}` },
+      ],
+    })} />
+  </Fragment>
+
+  <article class="blog-article pt-6 md:pt-10">
+    <Container>
+      <nav aria-label="Kruimelpad" class="mb-6 text-sm text-[color:var(--text-muted)]">
+        <ol class="flex flex-wrap items-center gap-1.5">
+          <li><a href="/" class="hover:text-brand-700 dark:hover:text-brand-400">Home</a></li>
+          <li aria-hidden="true">·</li>
+          <li><a href="/blog/" class="hover:text-brand-700 dark:hover:text-brand-400">Artikelen</a></li>
+          {categoryName && categorySlug && (
+            <Fragment>
+              <li aria-hidden="true">·</li>
+              <li><a href={`/blog/`} class="hover:text-brand-700 dark:hover:text-brand-400">{categoryName}</a></li>
+            </Fragment>
+          )}
+        </ol>
+      </nav>
+
+      <header class="max-w-3xl">
+        {categoryName && categorySlug && (
+          <a
+            href={`/blog/`}
+            class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 dark:bg-brand-950/40 px-3 py-1 text-xs font-medium uppercase tracking-wider text-brand-700 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/50 transition-colors"
+          >
+            {categoryName}
+          </a>
+        )}
+        <h1 class="mt-4 text-balance">{data.title}</h1>
+        <div class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[color:var(--text-muted)]">
+          <time datetime={publishedTime}>{formatDateNL(data.date)}</time>
+          {readingMinutes && (
+            <Fragment>
+              <span aria-hidden="true">·</span>
+              <span>{readingMinutes} min lezen</span>
+            </Fragment>
+          )}
+        </div>
+      </header>
+
+      {data.featuredImage && (
+        <div class="mt-8 md:mt-10 rounded-2xl overflow-hidden bg-ink-100 dark:bg-ink-800 aspect-[16/9] shadow-sm ring-1 ring-[color:var(--border)]">
+          <img
+            src={data.featuredImage}
+            alt={data.featuredImageAlt || data.title}
+            class="w-full h-full object-cover"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </div>
+      )}
+
+      <div class="mt-10 md:mt-12 prose-wonenhuis">
+        <slot />
+      </div>
+
+      {/* TOC is rendered here in the DOM, then JS moves it after the first <p> */}
+      <TableOfContents headings={headings} />
+
+      <RelatedPosts posts={related} />
+    </Container>
+  </article>
+</BaseLayout>
