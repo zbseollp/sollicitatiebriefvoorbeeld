@@ -4,30 +4,41 @@ import Container from "@components/Container.astro";
 import BlogPostCard from "@components/BlogPostCard.astro";
 import Pagination from "@components/Pagination.astro";
 import { SITE } from "@lib/site";
-import { getAllPosts, getRecentPosts, postUrl } from "@lib/posts";
+import { getAllPosts, postUrl } from "@lib/posts";
 
 const PER_PAGE = 50;
-const allPosts = await getAllPosts();
-const totalPages = Math.max(1, Math.ceil(allPosts.length / PER_PAGE));
-const posts = allPosts.slice(0, PER_PAGE);
-const recentPosts = (await getRecentPosts(6)).map((p) => ({ slug: p.id, title: p.data.title }));
 
-const title = `Alle artikelen | ${SITE.name}`;
-const description = `Alle artikelen op ${SITE.domain}.`;
+export async function getStaticPaths() {
+  const all = await getAllPosts();
+  const total = Math.ceil(all.length / 50);
+  if (total <= 1) return [];
+  return Array.from({ length: total - 1 }, (_, i) => ({
+    params: { n: String(i + 2) },
+  }));
+}
+
+const page = parseInt(Astro.params.n, 10);
+const allPosts = await getAllPosts();
+const totalPages = Math.ceil(allPosts.length / PER_PAGE);
+const start = (page - 1) * PER_PAGE;
+const posts = allPosts.slice(start, start + PER_PAGE);
+
+const title = `Alle artikelen — pagina ${page} | ${SITE.name}`;
+const description = `Artikelen pagina ${page} van ${totalPages}.`;
 ---
 
-<BaseLayout title={title} description={description} recentPosts={recentPosts}>
+<BaseLayout title={title} description={description}>
   <Container as="section" class="section-pad">
     <p class="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-[color:var(--color-brand-700)] mb-3">
-      Archief · {allPosts.length} artikelen
+      Archief · pagina {page} van {totalPages}
     </p>
     <h1 class="font-display !leading-[1.05] tracking-tight">Alle artikelen.</h1>
     <p class="mt-4 max-w-2xl text-lg text-[color:var(--text-muted)] leading-relaxed">
-      Op datum gerangschikt. Eerste {Math.min(PER_PAGE, allPosts.length)} van {allPosts.length}.
+      Artikelen {start + 1} – {Math.min(start + PER_PAGE, allPosts.length)} van {allPosts.length}.
     </p>
 
     <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {posts.map((post, i) => (
+      {posts.map((post) => (
         <BlogPostCard
           href={postUrl(post)}
           title={post.data.title}
@@ -36,11 +47,10 @@ const description = `Alle artikelen op ${SITE.domain}.`;
           image={post.data.featuredImage}
           imageAlt={post.data.featuredImageAlt}
           category={post.data.categories[0]}
-          priority={i === 0}
         />
       ))}
     </div>
 
-    <Pagination current={1} totalPages={totalPages} />
+    <Pagination current={page} totalPages={totalPages} />
   </Container>
 </BaseLayout>

@@ -1,0 +1,62 @@
+---
+interface Props {
+  current: number;
+  totalPages: number;
+  base?: string;
+}
+const { current, totalPages, base = "/blog/" } = Astro.props;
+
+const hrefFor = (n: number) => (n === 1 ? base : `${base}pagina/${n}/`);
+
+function pageList(): (number | "...")[] {
+  if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+  const items: (number | "...")[] = [1];
+  const window = 2;
+  const start = Math.max(2, current - window);
+  const end = Math.min(totalPages - 1, current + window);
+  if (start > 2) items.push("...");
+  for (let i = start; i <= end; i++) items.push(i);
+  if (end < totalPages - 1) items.push("...");
+  items.push(totalPages);
+  return items;
+}
+const pages = pageList();
+const prevHref = current > 1 ? hrefFor(current - 1) : null;
+const nextHref = current < totalPages ? hrefFor(current + 1) : null;
+---
+
+{totalPages > 1 && (
+  <nav aria-label="Paginering" class="mt-14 pt-8 border-t border-[color:var(--border)] flex items-center justify-center gap-2 flex-wrap">
+    {prevHref ? (
+      <a href={prevHref} class="inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--color-brand-700)] hover:text-[color:var(--color-brand-800)] mr-2">
+        <svg class="h-4 w-4 rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
+        Vorige
+      </a>
+    ) : (
+      <span class="inline-flex items-center gap-1.5 text-sm text-[color:var(--text-muted)] opacity-40 mr-2" aria-hidden="true">
+        <svg class="h-4 w-4 rotate-180" viewBox="0 0 20 20" fill="currentColor"><path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
+        Vorige
+      </span>
+    )}
+    {pages.map((p) => (
+      p === "..." ? (
+        <span class="text-[color:var(--text-muted)] px-2" aria-hidden="true">…</span>
+      ) : p === current ? (
+        <span class="inline-flex items-center justify-center min-w-10 h-10 px-3 bg-[color:var(--color-brand-700)] text-white font-semibold text-sm" aria-current="page">{p}</span>
+      ) : (
+        <a href={hrefFor(p)} class="inline-flex items-center justify-center min-w-10 h-10 px-3 border border-[color:var(--border)] text-[color:var(--text)] font-semibold text-sm hover:border-[color:var(--color-brand-500)] hover:bg-[color:var(--color-brand-50)] transition-colors">{p}</a>
+      )
+    ))}
+    {nextHref ? (
+      <a href={nextHref} class="ml-2 inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--color-brand-700)] hover:text-[color:var(--color-brand-800)]">
+        Volgende
+        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
+      </a>
+    ) : (
+      <span class="ml-2 inline-flex items-center gap-1.5 text-sm text-[color:var(--text-muted)] opacity-40" aria-hidden="true">
+        Volgende
+        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
+      </span>
+    )}
+  </nav>
+)}
