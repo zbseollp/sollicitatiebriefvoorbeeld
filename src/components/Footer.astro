@@ -35,7 +35,7 @@ const { recentPosts = [] } = Astro.props;
         <p class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[color:var(--color-accent-300)] mb-3">Rubrieken</p>
         <ul class="space-y-1.5 text-sm">
           {SITE.categories.map(c => (
-            <li><a href={`/blog/category/${c.slug}/`} class="hover:text-[color:var(--color-accent-300)] transition-colors">{c.name}</a></li>
+            <li><a href={`/categorie/${c.slug}/`} class="hover:text-[color:var(--color-accent-300)] transition-colors">{c.name}</a></li>
           ))}
         </ul>
       </div>

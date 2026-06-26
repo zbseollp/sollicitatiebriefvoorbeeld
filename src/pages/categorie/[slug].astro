@@ -1,0 +1,70 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/Container.astro";
+import { SITE, categorySlugToName } from "@lib/site";
+import { getAllPosts, postUrl } from "@lib/posts";
+
+export async function getStaticPaths() {
+  return SITE.categories.map((c) => ({ params: { slug: c.slug } }));
+}
+
+const { slug } = Astro.params;
+const name = categorySlugToName(slug);
+const allPosts = await getAllPosts();
+const posts = allPosts.filter((p) => p.data.categories.includes(name || ""));
+
+const INTRO: Record<string, string> = {
+  "Brief per beroep": "Voorbeeldbrieven voor concrete beroepen — van administratief medewerker tot zorgcoördinator. Aanpassen op jouw situatie, niet kopiëren.",
+  "Sollicitatiebrief": "Opbouw, openingszinnen, valkuilen. De brief is een verhaal in 4 alinea's, niet meer.",
+  "CV-voorbeelden": "CV-templates per type werkervaring. Beknopte structuur waar werkgevers in 8 seconden doorheen kijken.",
+  "Sollicitatiegesprek": "Voorbereiding, vragen die je krijgt en zelf stelt, de slotmoment-techniek.",
+  "Sollicitatietips": "Strategie rond solliciteren — netwerken, social media, opvolgen, omgaan met afwijzing.",
+};
+const intro = INTRO[name || ""] || `Alle artikelen in ${name?.toLowerCase()}.`;
+
+const azSorted = [...posts].sort((a, b) => a.data.title.localeCompare(b.data.title, "nl"));
+
+const title = `${name} — ${posts.length} artikelen | ${SITE.name}`;
+const description = `${posts.length} voorbeelden en uitleg binnen ${name?.toLowerCase()}.`;
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="bg-[color:var(--bg)] border-b border-[color:var(--border)]">
+    <Container>
+      <div class="py-14 md:py-20 max-w-3xl">
+        <p class="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-[color:var(--color-brand-700)] mb-4">
+          Rubriek · {posts.length} stuks
+        </p>
+        <h1 class="font-display !leading-[1.04] tracking-tight">{name}.</h1>
+        <p class="mt-5 text-lg text-[color:var(--text-muted)] max-w-2xl leading-relaxed">
+          {intro}
+        </p>
+      </div>
+    </Container>
+  </section>
+
+  <Container as="section" class="section-pad">
+    {posts.length === 0 ? (
+      <p class="text-[color:var(--text-muted)]">Nog geen artikelen in deze rubriek.</p>
+    ) : (
+      <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 max-w-6xl">
+        {azSorted.map((p, i) => (
+          <li class="flex items-baseline gap-3 py-3 border-b border-dotted border-[color:var(--border)]">
+            <span class="font-mono text-[0.7rem] text-[color:var(--color-accent-700)] tabular-nums shrink-0">
+              {String(i + 1).padStart(3, "0")}
+            </span>
+            <a href={postUrl(p)} class="font-display text-base md:text-[1.05rem] leading-snug text-[color:var(--text)] hover:text-[color:var(--color-brand-700)] transition-colors">
+              {p.data.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <div class="mt-12">
+      <a href="/blog/" class="inline-flex items-center gap-2 text-sm font-semibold text-[color:var(--color-brand-700)] hover:text-[color:var(--color-brand-800)] transition-colors border-b border-[color:var(--color-accent-500)] pb-0.5">
+        Naar het volledige archief <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </Container>
+</BaseLayout>
